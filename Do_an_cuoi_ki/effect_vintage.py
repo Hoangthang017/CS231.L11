@@ -25,6 +25,8 @@ def effect_yellow_pic(img_rgb):
                 newImage[x,y,0] = 255
             else:
                 newImage[x,y,0] = B
+    
+    newImage = cv2.cvtColor(newImage, cv2.COLOR_BGR2RGB)
     return newImage
 
 # hàm tạo effect
@@ -67,12 +69,12 @@ def main():
     # tạo hiệu ứng
     img_res = effect_old_pic(img_ori)
 
-    # show result
-    cv2.imshow('vintage',img_res)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # im kết quả 
+    img_res = Image.fromarray(img_res)
+    img_res.show()
 
 # hàm chính
 if __name__ == "__main__":
     main()
+
 
