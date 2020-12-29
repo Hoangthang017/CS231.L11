@@ -2,7 +2,11 @@ import cv2
 import numpy as np
 from PIL import Image
 
-def effect_mirror(img,option):
+# option và mode có 2 chế độ 
+# option 0 : ảnh ngang
+# option 1 : ảnh dọc
+#  mode = 0 : nhìn vào nhau , mode 1 : ngược lại
+def effect_mirror(img,option=0,mode=0):
   #get original image size
   img_size = img.size
 
@@ -17,7 +21,6 @@ def effect_mirror(img,option):
     #merge 2 images
     #mode 0: original image placed left
     #mode 1: original image placed right
-    mode = int(input())
     if mode == 0:
       img1 = img
       img2 = hor_flippedImg
@@ -39,7 +42,6 @@ def effect_mirror(img,option):
     #merge 2 images
     #mode 0: original image placed upper
     #mode 1: original image placed lower
-    mode = int(input())
     if mode == 0:
       img1 = img
       img2 = ver_flippedImg
@@ -51,13 +53,15 @@ def effect_mirror(img,option):
     return new_img
 
 def main():
-  #read image
-  img_org = Image.open('./test.jpg')
-  cv2.imshow("Origin",img_org)
+    #read image
+    img_org = Image.open('./Test/test_1.jpg')
+    # img_org = np.array(img_org)
+  
+    # cv2.imshow("origin",img_org)
 
-  img_res = effect_mirror(img_org,0)
-  cv2.imshow("Result",img_res)
-  cv2.waitKey(0)
+    img_res = effect_mirror(img_org)
+    
+    img_res.show()
 
 if __name__ == "__main__":
-    main()
+  main()
