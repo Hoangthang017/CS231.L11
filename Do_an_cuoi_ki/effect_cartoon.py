@@ -2,52 +2,48 @@ import cv2
 
 # hàm tạo hiệu ứng
 def render(img_rgb):
-    numDownSamples = 2       # number of downscaling steps
-    numBilateralFilters = 50  # number of bilateral filtering steps
+	# số bước làm nhỏ ảnh
+	numDownSamples = 1      
 
-		# -- STEP 1 --
-		# downsample image using Gaussian pyramid
-    img_color = img_rgb
-    for _ in range(numDownSamples):
-        img_color = cv2.pyrDown(img_color)
-		#cv2.imshow("downcolor",img_color)
-		#cv2.waitKey(0)
-		# repeatedly apply small bilateral filter instead of applying
-		# one large filter
-    for _ in range(numBilateralFilters):
-        img_color = cv2.bilateralFilter(img_color, 9, 9, 7)
-		#cv2.imshow("bilateral filter",img_color)
-		#cv2.waitKey(0)
-		# upsample image to original size
-    for _ in range(numDownSamples):
-        img_color = cv2.pyrUp(img_color)
-		#cv2.imshow("upscaling",img_color)
-		#cv2.waitKey(0)
-		# -- STEPS 2 and 3 --
-		# convert to grayscale and apply median blur
-    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
-    img_blur = cv2.medianBlur(img_gray, 3)
-		#cv2.imshow("grayscale+median blur",img_color)
-		#cv2.waitKey(0)
-		# -- STEP 4 --
-		# detect and enhance edges
-    img_edge = cv2.adaptiveThreshold(img_blur, 255,
-									cv2.ADAPTIVE_THRESH_MEAN_C,
-									cv2.THRESH_BINARY,9, 2)
-		#cv2.imshow("edge",img_edge)
-		#cv2.waitKey(0)
+	# số bước sử dụng bộ lọc song phương
+	numBilateralFilters = 50
 
-		# -- STEP 5 --
-		# convert back to color so that it can be bit-ANDed with color image
-    (x,y,z) = img_color.shape
-    img_edge = cv2.resize(img_edge,(y,x))
-    img_edge = cv2.cvtColor(img_edge, cv2.COLOR_GRAY2RGB)
-		#cv2.imwrite("edge.png",img_edge)
-		#cv2.imshow("step 5", img_edge)
-		#cv2.waitKey(0)
-		#img_edge = cv2.resize(img_edge,(i for i in img_color.shape[:2]))
-		#print img_edge.shape, img_color.shape
-    return cv2.bitwise_and(img_color, img_edge)
+	# Làm nhỏ ảnh sử dụng Gaussian Pynamids
+	img_color = img_rgb
+	for _ in range(numDownSamples):
+		img_color = cv2.pyrDown(img_color)
+	cv2.imshow("downcolor",img_color)
+
+	# liên tục áp dụng bộ lọc 2 bên nhỏ thay vì sử dụng một bộ lọc lớn
+	for _ in range(numBilateralFilters):
+		img_color = cv2.bilateralFilter(img_color, 9, 9, 7)
+	cv2.imshow("bilateral filter",img_color)
+
+	# phóng to ảnh trở lại kích thước gốc
+	for _ in range(numDownSamples):
+		img_color = cv2.pyrUp(img_color)
+	cv2.imshow("upscaling",img_color)
+
+
+	# chuyển sang dạng ảnh xám và áp dụng độ mờ trung bình
+	img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
+	img_blur = cv2.medianBlur(img_gray, 3)
+	cv2.imshow("grayscale+median blur",img_blur)
+
+	# nhận diện cạnh và tô các cạnh 
+	img_edge = cv2.adaptiveThreshold(img_blur, 255,
+									cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+									cv2.THRESH_BINARY,9, 10)
+	cv2.imshow("edge",img_edge)
+
+	# chuyển từ ảnh xám thành màu để nó có thể 
+	(x,y,z) = img_color.shape
+	img_edge = cv2.resize(img_edge,(y,x))
+	img_edge = cv2.cvtColor(img_edge, cv2.COLOR_GRAY2RGB)
+	# cv2.imwrite("edge.png",img_edge)
+	# cv2.imshow("step 5", img_edge)
+
+	return cv2.bitwise_and(img_color, img_edge)
 
 # hàm chính 
 def main():
